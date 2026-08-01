@@ -1,0 +1,22 @@
+services:
+  rag-assistant:
+    build: .
+    image: rag-assistant:latest
+    ports:
+      - "8000:8000"   # FastAPI
+      - "8501:8501"   # Streamlit UI
+    env_file:
+      - .env
+    volumes:
+      - chroma_data:/app/chroma_store
+      - ./knowledge_base:/app/knowledge_base
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  chroma_data:

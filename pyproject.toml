@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-assistant"
+version = "1.0.0"
+description = "Enterprise RAG Knowledge Assistant: retrieve -> rerank -> generate -> groundedness-checked Q&A over internal documentation."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "langchain>=0.3.0,<0.4",
+    "langchain-core>=0.3.0,<0.4",
+    "langchain-community>=0.3.0,<0.4",
+    "langchain-text-splitters>=0.3.0,<0.4",
+    "langchain-huggingface>=0.1.0,<0.2",
+    "langchain-chroma>=0.2.0,<0.3",
+    "langchain-openai>=0.2.0,<0.3",
+    "chromadb>=0.5.0,<0.6",
+    "sentence-transformers>=3.0.0,<4",
+    "anthropic>=0.40.0",
+    "openai>=1.50.0",
+    "requests>=2.31.0",
+    "pydantic>=2.7.0,<3",
+    "pydantic-settings>=2.4.0,<3",
+    "fastapi>=0.115.0,<1",
+    "uvicorn[standard]>=0.30.0,<1",
+    "streamlit>=1.38.0,<2",
+    "pypdf>=4.3.0",
+    "docx2txt>=0.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "httpx>=0.27.0",
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+rag-api = "rag_assistant.api.main:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: tests that call a real LLM provider and require an API key",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+# E501: line length is enforced via the formatter's `line-length`, not the linter.
+# B008: FastAPI's `Depends(...)` in argument defaults is the framework's documented
+#       pattern, not a real "mutable default" footgun -- excluding just that call.
+ignore = ["E501"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends"]
